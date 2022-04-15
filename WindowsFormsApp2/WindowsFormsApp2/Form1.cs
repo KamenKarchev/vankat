@@ -17,12 +17,12 @@ namespace WindowsFormsApp2
 
         List<string> allLines = new List<string>();
         List<Block> blocks = new List<Block>();
-
+        string[] letters = {"e","t","a","o","i","n","s","r","h","l","d","c","u","m","f","p","g","w","y","b","v","k","x","j","q","z"};
 
         public Form1()
         {
             InitializeComponent();
-            richTextBox1.Text = "cat\ncat cat\ncat cat\ncat cat cat cat cat\ncat";
+            richTextBox1.Text = "cat\ncat cat\ncat cat\ncat cat\ncat cat cat cat cat\ncat";
             _var = 0;
 
             allLines = richTextBox1.Lines.ToList();
@@ -32,12 +32,54 @@ namespace WindowsFormsApp2
         {
             listBox1.Items.Clear();
             DetermineBlocks();
+            string folder = "";
+            string result = "";
             foreach (var block in blocks)
             {
-                var number = DevideFunction(block.blockData);
-                listBox1.Items.Add(String.Format("{0:0.##}", number));
+                switch (block.FunctionFolder)
+                {
+                    default:
+                        break;
+                    case "math":
+                        #region math
+                         switch (block.FunctionInBlock)
+                        {
+                            default:
+                                break;
+                            case "add":
+                                result = AddFunction(block.blockData).ToString();
+                                listBox1.Items.Add(result);
+                                break;
+                            case "subtract":
+                                result = SubtractFunction(block.blockData).ToString();
+                                listBox1.Items.Add(result);
+                                break;
+                            case "multiply":
+                                result = MultplyFunction(block.blockData).ToString();
+                                listBox1.Items.Add(result);
+                                break;
+                            case "devide":
+                                result = DevideFunction(block.blockData).ToString();
+                                listBox1.Items.Add(result);
+                                break;
+                        }
+                        #endregion
+                        break;
+                    case "text":
+                        switch (block.FunctionInBlock)
+                        {
+                            case"write":
+                                listBox1.Items.Add(WriteOnSame(block.blockData));
+                                break;
+                            case "writeline":
+                                listBox1.Items.Add(WriteOnNew(block.blockData));
+                                break;
+                        }
+                        break;
+                    case "loops":
+                        break;
+                }
             }
-            listBox1.Items.Add(1940.308);
             //foreach (var item in blocks[0].blockData)
             //{
             //    listBox1.Items.Add(item);
@@ -56,6 +98,7 @@ namespace WindowsFormsApp2
         private void button1_Click(object sender, EventArgs e)
         {
         }
+        #region block fromation
         private void DetermineBlocks()
         {
             //get text
@@ -86,6 +129,19 @@ namespace WindowsFormsApp2
                         data.Add(allLines[l]);
                     }
                     newBlock.blockData = data;
+                    newBlock.FunctionFolder = DetermenBlockFunctionFolder(newBlock.blockData);
+                    switch (newBlock.FunctionFolder)
+                    {
+                        case "math":
+                            newBlock.FunctionInBlock = DetermenBlockFunction_Math(newBlock.blockData);
+                            break;
+                        case "text":
+                            newBlock.FunctionInBlock = DetermenBlockFunction_Text(newBlock.blockData);
+                            break;
+                        case "loops":
+
+                            break;
+                    }
                     blocks.Add(newBlock);
                     i = j;
                 }
@@ -107,15 +163,68 @@ namespace WindowsFormsApp2
             }
             return data;
         }
-        private int FunctionDeterminar(List<string> initialList)
+        private string DetermenBlockFunction_Math(List<string> initialList)
         {
-            return 0;
+            string functionLine = initialList[1];
+            if (functionLine == "cat cat")
+            {
+                return "add";
+            }
+            else if(functionLine == "cat cat cat")
+            {
+                return "subtract";
+            }
+            else if (functionLine == "cat cat cat cat")
+            {
+                return "multiply";
+            }
+            else if (functionLine == "cat cat cat cat cat")
+            {
+                return "devide";
+            }
+            else if (functionLine == "hoi4")
+            {
+                return "hoi4";
+            }
+            return string.Empty;
         }
+        private string DetermenBlockFunction_Text(List<string> initialList)
+        {
+            string functionLine = initialList[1];
+            if (functionLine == "cat cat")
+            {
+                return "write";
+            }
+            else if (functionLine == "cat cat cat")
+            {
+                return "writeline";
+            }
+            return string.Empty;
+        }
+        private string DetermenBlockFunctionFolder(List<string> initialList)
+        {
+            string functionLine = initialList[0];
+            if (functionLine == "cat cat")
+            {
+                return "math";
+            }
+            else if (functionLine == "cat cat cat")
+            {
+                return "text";
+            }
+            else if (functionLine == "cat cat cat cat")
+            {
+                return "loops";
+            }
+            return string.Empty;
+        }
+        #endregion
+        #region math functions
         private int AddFunction(List<string> initialList)
         {
             int output = 0;
             string[] data = GetDataArr(initialList);
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 1; i < data.Length; i++)
             {
                 string[] temp = data[i].Split(' ');
                 output = output + temp.Length;
@@ -126,8 +235,8 @@ namespace WindowsFormsApp2
         {
             int output = 0;
             string[] data = GetDataArr(initialList);
-            int temp = data[0].Split(' ').Length;
-            for (int i = 0; i < data.Length; i++)
+            int temp = data[1].Split(' ').Length;
+            for (int i = 1; i < data.Length; i++)
             {
                 output = temp - data[i].Split(' ').Length;
             }
@@ -136,9 +245,9 @@ namespace WindowsFormsApp2
         }
         private int MultplyFunction(List<string> initialList)
         {
-            int output = 0;
+            int output = 1;
             string[] data = GetDataArr(initialList);
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 1; i < data.Length; i++)
             {
                 string[] temp = data[i].Split(' ');
                 output = output * temp.Length;
@@ -149,14 +258,54 @@ namespace WindowsFormsApp2
         {
             double output = 0;
             string[] data = GetDataArr(initialList);
-            int temp = data[0].Split(' ').Length;
-            //for (int i = 0; i < data.Length; i++)
-            //{
-            //    output = temp / (data[i].Split(' ').Length);
-            //}
-            output = temp / (data[1].Split(' ').Length);
+            double temp = data[1].Split(' ').Length;
+            output = temp / (data[2].Split(' ').Length);
             return output;
         }
+        #endregion
+        #region text functions
+        private string WriteOnSame(List<string> initialList)
+        {
+            string output = "";
+            string[] data = GetDataArr(initialList);
+            for (int i = 1; i < data.Length; i++)
+            {
+                for (int j = 0; j < letters.Length; j++)
+                {
+                    if (data[i].Split(' ').Length == j+2)
+                    {
+                        output = output + letters[j];
+                    }
+                }
+                
+            }
+            return output;
+        }
+        private string[] WriteOnNew(List<string> initialList)
+        {
+            string[] data = GetDataArr(initialList);
+            string[] output = new string[data.Length-1];
+            for (int i = 1; i < data.Length; i++)
+            {
+                if (data[i].Split(' ').Length == i + 1)
+                {
+                    output[i-2] = letters[i-1];
+                }
+            }
+            return output;
+        }
+        //private int AddFunction(List<string> initialList)
+        //{
+        //    int output = 0;
+        //    string[] data = GetDataArr(initialList);
+        //    for (int i = 1; i < data.Length; i++)
+        //    {
+        //        string[] temp = data[i].Split(' ');
+        //        output = output + temp.Length;
+        //    }
+        //    return output;
+        //}
+        #endregion
     }
 }
 

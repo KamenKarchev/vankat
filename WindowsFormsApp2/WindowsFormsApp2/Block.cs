@@ -10,13 +10,13 @@ namespace WindowsFormsApp2
     {
         public int Start { get; set; }
         public int End { get; set; }
-        public int FunctionInBlock { get; set; }
+        public string FunctionFolder { get; set; }
+        public string FunctionInBlock { get; set; }
         public List<string> blockData { get; set; }
         public Block()
         {
 
         }
-
     }
 
 }
